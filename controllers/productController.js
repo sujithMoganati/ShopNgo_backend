@@ -1,11 +1,12 @@
 const Product = require("../models/Product");
 const { GROCERY_CATEGORIES } = require("../utils/constants");
 
-// Create a product
+const { uploadImage } = require("../utils/uploadImage"); // Your Cloudinary upload helper
+
 exports.createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, stock, weight, image } =
-      req.body;
+    const { name, description, price, category, stock, weight } = req.body;
+    let imageUrl = "";
 
     // Validation
     if (
@@ -53,6 +54,12 @@ exports.createProduct = async (req, res) => {
         .json({ message: "Product with this name already exists" });
     }
 
+    // Handle image upload from multer
+    if (req.file) {
+      const localPath = req.file.path;
+      imageUrl = await uploadImage(localPath);
+    }
+
     const product = new Product({
       name,
       description,
@@ -60,12 +67,14 @@ exports.createProduct = async (req, res) => {
       category,
       stock,
       weight,
-      image,
+      image: imageUrl,
     });
+
     const saved = await product.save();
     res.status(201).json(saved);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err.message);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
