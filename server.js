@@ -29,9 +29,6 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-// Routes placeholder
-const path = require("path");
-
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
