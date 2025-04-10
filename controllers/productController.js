@@ -33,10 +33,8 @@ exports.createProduct = async (req, res) => {
         .json({ message: "Stock must be a non-negative number" });
     }
 
-    if (isNaN(weight) || weight < 0) {
-      return res
-        .status(400)
-        .json({ message: "Weight must be a non-negative number" });
+    if (weight === "") {
+      return res.status(400).json({ message: "Weight must be a non-empty" });
     }
 
     if (!GROCERY_CATEGORIES.includes(category)) {
