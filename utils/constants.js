@@ -1,6 +1,7 @@
 module.exports.GROCERY_CATEGORIES = [
   "Biscuits & Cakes",
   "Cereals & Breakfast",
+  "Chicken & Meat",
   "Chips & Namkeens",
   "Chocolates",
   "Dairy",
@@ -9,7 +10,6 @@ module.exports.GROCERY_CATEGORIES = [
   "Fruits",
   "Ice Cream",
   "Instant Food",
-  "Meat",
   "Oils & Ghee",
   "Seafood",
   "Vegetables",
