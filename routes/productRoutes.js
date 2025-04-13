@@ -8,10 +8,11 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-router.post("/create", upload.single("image"), productController.createProduct);
+// CRUD Routes
+router.post("/", productController.createProduct);
 router.get("/", productController.getAllProducts);
 router.get("/categories", productController.getAllCategories);
-router.get("/:id", productController.getProductById);
+router.get("/:id", productController.getProductById); // ✅ NEW
 router.put("/:id", productController.updateProduct);
 router.delete("/:id", productController.deleteProduct);
 

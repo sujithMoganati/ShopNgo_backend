@@ -1,14 +1,14 @@
 const Product = require("../models/Product");
 const { GROCERY_CATEGORIES } = require("../utils/constants");
+const { uploadImage } = require("../utils/uploadImage");
+const mongoose = require("mongoose");
 
-const { uploadImage } = require("../utils/uploadImage"); // Your Cloudinary upload helper
-
+// CREATE Product
 exports.createProduct = async (req, res) => {
   try {
     const { name, description, price, category, stock, weight } = req.body;
     let imageUrl = "";
 
-    // Validation
     if (
       !name ||
       !price ||
@@ -34,7 +34,9 @@ exports.createProduct = async (req, res) => {
     }
 
     if (weight === "") {
-      return res.status(400).json({ message: "Weight must be a non-empty" });
+      return res
+        .status(400)
+        .json({ message: "Weight must be a non-empty string" });
     }
 
     if (!GROCERY_CATEGORIES.includes(category)) {
@@ -52,7 +54,6 @@ exports.createProduct = async (req, res) => {
         .json({ message: "Product with this name already exists" });
     }
 
-    // Handle image upload from multer
     if (req.file) {
       const localPath = req.file.path;
       imageUrl = await uploadImage(localPath);
@@ -76,7 +77,7 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// Get all products
+// GET all products
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.find().sort({ createdAt: -1 });
@@ -86,10 +87,15 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-// Get a product by ID
+// ✅ GET product by ID
 exports.getProductById = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid product ID" });
+    }
+
+    const product = await Product.findById(id);
     if (!product) return res.status(404).json({ message: "Product not found" });
     res.json(product);
   } catch (err) {
@@ -97,7 +103,7 @@ exports.getProductById = async (req, res) => {
   }
 };
 
-// Update a product
+// UPDATE product
 exports.updateProduct = async (req, res) => {
   try {
     const updates = req.body;
@@ -122,7 +128,7 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-// Delete a product
+// DELETE product
 exports.deleteProduct = async (req, res) => {
   try {
     const deleted = await Product.findByIdAndDelete(req.params.id);
@@ -133,7 +139,7 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-// Get all categories
+// GET all categories
 exports.getAllCategories = async (req, res) => {
   try {
     res.json(GROCERY_CATEGORIES);
