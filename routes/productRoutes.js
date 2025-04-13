@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // CRUD Routes
-router.post("/", productController.createProduct);
+router.post("/create", productController.createProduct);
 router.get("/", productController.getAllProducts);
 router.get("/categories", productController.getAllCategories);
 router.get("/:id", productController.getProductById); // ✅ NEW
