@@ -147,3 +147,24 @@ exports.getAllCategories = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch categories" });
   }
 };
+exports.getProductByName = async (req, res) => {
+  try {
+    // Extracting the product name from request parameters
+    const { name } = req.params;
+
+    // Find products that match the name using a regular expression
+    const products = await Product.find({
+      name: { $regex: name, $options: "i" },
+    });
+
+    // If no products are found, return a 404 error
+    if (products.length === 0)
+      return res.status(404).json({ message: "Product not found" });
+
+    // Return the matching products
+    res.json(products);
+  } catch (err) {
+    // If there's an error, return a 500 error with the message
+    res.status(500).json({ error: err.message });
+  }
+};
