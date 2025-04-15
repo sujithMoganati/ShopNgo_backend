@@ -113,11 +113,11 @@ exports.verifyRazorpayPayment = async (req, res) => {
 };
 
 exports.getAllOrdersByClerkId = async (req, res) => {
-  const { userId: clerkId } = req.params;
+  const { number } = req.params;
 
   try {
     // 🔍 Find the internal MongoDB user by Clerk ID
-    const user = await User.findOne({ clerkId });
+    const user = await User.findOne({ number });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
