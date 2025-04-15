@@ -1,30 +1,48 @@
 const User = require("../models/User");
 const { uploadImage } = require("../utils/uploadImage");
 
-// Create a new user
 exports.createUser = async (req, res) => {
   try {
     let { name, number, clerkId, addresses, email } = req.body;
 
-    // Parse addresses string to object if needed
-    if (typeof addresses === "string") {
-      addresses = JSON.parse(addresses);
+    // ✅ Validate required fields
+    if (!name || !number || !clerkId || !email || !addresses) {
+      return res.status(400).json({ message: "Missing required fields." });
     }
 
+    // ✅ Parse addresses string to array if it's a string
+    if (typeof addresses === "string") {
+      try {
+        addresses = JSON.parse(addresses);
+      } catch (parseError) {
+        return res.status(400).json({ message: "Invalid address format." });
+      }
+    }
+
+    // ✅ Check for existing user
     const userExists = await User.findOne({ clerkId });
     if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "User already exists." });
     }
 
     let imageUrl = "";
 
-    // Image upload logic (supports both base64 & multer file)
-    if (req.file) {
-      imageUrl = await uploadImage(req.file.path);
-    } else if (req.body.image?.startsWith("data:image")) {
-      imageUrl = await uploadImage(req.body.image);
+    // ✅ Handle image (file or base64)
+    try {
+      if (req.file) {
+        imageUrl = await uploadImage(req.file.path);
+      } else if (req.body.image?.startsWith("data:image")) {
+        imageUrl = await uploadImage(req.body.image);
+      } else {
+        return res.status(400).json({ message: "User image is required." });
+      }
+    } catch (uploadErr) {
+      return res
+        .status(500)
+        .json({ message: "Image upload failed.", error: uploadErr.message });
     }
 
+    // ✅ Create new user
     const user = new User({
       name,
       number,
@@ -37,7 +55,7 @@ exports.createUser = async (req, res) => {
     await user.save();
     res.status(201).json(user);
   } catch (err) {
-    console.error("Error creating user:", err.message);
+    console.error("Error creating user:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
@@ -88,7 +106,7 @@ exports.getUsers = async (req, res) => {
 exports.getUserbyClerkId = async (req, res) => {
   try {
     const { clerkId } = req.params;
-    const user = await User.findOne(clerkId);
+    const user = await User.findOne({ clerkId });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

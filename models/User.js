@@ -1,5 +1,18 @@
 const mongoose = require("mongoose");
 
+const addressSchema = new mongoose.Schema({
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: () => new mongoose.Types.ObjectId(), // ✅ Fixed: Properly generate ObjectId
+  },
+  line1: { type: String, required: true },
+  line2: { type: String },
+  landmark: { type: String },
+  city: { type: String, required: true },
+  state: { type: String, required: true },
+  pincode: { type: String, required: true },
+});
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -23,20 +36,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
-    addresses: [
-      {
-        _id: {
-          type: mongoose.Schema.Types.ObjectId,
-          default: mongoose.Types.ObjectId,
-        },
-        line1: { type: String, required: true },
-        line2: { type: String },
-        landmark: { type: String },
-        city: { type: String, required: true },
-        state: { type: String, required: true },
-        pincode: { type: String, required: true },
-      },
-    ],
+    addresses: [addressSchema], // ✅ Clean use of embedded schema
     number: {
       type: String,
       required: true,
