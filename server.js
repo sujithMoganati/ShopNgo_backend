@@ -9,6 +9,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("./routes/userRoutes");
 const productRoutes = require("./routes/productRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 const fs = require("fs");
 const path = require("path");
 
@@ -36,7 +37,7 @@ app.get("/", (req, res) => {
 app.use("/user", userRoutes);
 
 app.use("/products", productRoutes);
-
+app.use("/orders", orderRoutes);
 // MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)
