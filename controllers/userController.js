@@ -4,7 +4,12 @@ const { uploadImage } = require("../utils/uploadImage");
 // Create a new user
 exports.createUser = async (req, res) => {
   try {
-    const { name, number, clerkId, addresses } = req.body;
+    let { name, number, clerkId, addresses, email } = req.body;
+
+    // Parse addresses string to object if needed
+    if (typeof addresses === "string") {
+      addresses = JSON.parse(addresses);
+    }
 
     const userExists = await User.findOne({ clerkId });
     if (userExists) {
@@ -24,6 +29,7 @@ exports.createUser = async (req, res) => {
       name,
       number,
       clerkId,
+      email,
       addresses,
       image: imageUrl,
     });
@@ -82,7 +88,7 @@ exports.getUsers = async (req, res) => {
 exports.getUserbyClerkId = async (req, res) => {
   try {
     const { clerkId } = req.params;
-    const user = await User.findById(clerkId);
+    const user = await User.findOne(clerkId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
