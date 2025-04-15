@@ -1,5 +1,3 @@
-const mongoose = require("mongoose");
-
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -23,7 +21,20 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
-    addresses: [],
+    addresses: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          default: mongoose.Types.ObjectId,
+        },
+        line1: { type: String, required: true },
+        line2: { type: String },
+        landmark: { type: String },
+        city: { type: String, required: true },
+        state: { type: String, required: true },
+        pincode: { type: String, required: true },
+      },
+    ],
     number: {
       type: String,
       required: true,
